@@ -70,5 +70,6 @@ func Metrics(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	c.JSON(200, m)
+	r := utils.GetScore(m)
+	c.JSON(200, r)
 }
