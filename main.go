@@ -45,9 +45,9 @@ func main() {
 		AllowAllOrigins: true,
 	}))
 
-	r.GET("/hello", func(c *gin.Context) {
+	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"hello": "world",
+			"status": "Feelin' Great!",
 		})
 	})
 
