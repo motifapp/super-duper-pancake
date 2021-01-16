@@ -22,6 +22,7 @@ var (
 )
 
 func init() {
+	gin.SetMode(gin.ReleaseMode)
 	utils.Error(e)
 	e = C.Ping(ctx, nil)
 	utils.Error(e)
