@@ -2,6 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"main/models"
+	"main/utils"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -10,18 +15,27 @@ import (
 )
 
 var (
-	ctx    = context.TODO()
-	C, e   = mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://motifapp:<password>@cluster0.unmcm.mongodb.net/motif?retryWrites=true&w=majority"))
-	Client = C.Database("motif")
+	ctx       = context.TODO()
+	C, e      = mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://motifapp:<password>@cluster0.unmcm.mongodb.net/motif?retryWrites=true&w=majority"))
+	Client    = C.Database("motif")
+	ScrapeUrl = "https://server.aidenbai.repl.co/api/v1/scrape?url="
 )
 
 func init() {
+	utils.Error(e)
+	e = C.Ping(ctx, nil)
+	utils.Error(e)
+}
+
+func GETMETRICS(url string) (models.DataRes, error) {
+	var res models.DataRes
+	w, e := http.Get(fmt.Sprintf("%s%s", ScrapeUrl, url))
 	if e != nil {
-		panic(e)
+		return models.DataRes{}, e
 	}
-	if e := C.Ping(ctx, nil); e != nil {
-		panic(e)
-	}
+	json.NewDecoder(w.Body).Decode(&res)
+	w.Body.Close()
+	return res, nil
 }
 
 func main() {
@@ -36,5 +50,25 @@ func main() {
 			"hello": "world",
 		})
 	})
+
+	r.GET("/metrics", Metrics)
 	r.Run()
+}
+
+type Input struct {
+	Url string `json:"url" form:"url" binding:"required"`
+}
+
+func Metrics(c *gin.Context) {
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	m, err := GETMETRICS(input.Url)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	c.JSON(200, m)
 }
