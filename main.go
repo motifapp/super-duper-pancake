@@ -62,7 +62,7 @@ type Input struct {
 func Metrics(c *gin.Context) {
 	var input Input
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	m, err := GETMETRICS(input.Url)
