@@ -56,12 +56,8 @@ func main() {
 	r.Run()
 }
 
-type Input struct {
-	Url string `json:"url" form:"url" binding:"required"`
-}
-
 func Metrics(c *gin.Context) {
-	var input Input
+	var input models.Input
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -71,6 +67,6 @@ func Metrics(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	r := utils.GetScore(m)
-	c.JSON(200, r)
+
+	c.JSON(200, utils.GetScore(m))
 }

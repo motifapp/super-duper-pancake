@@ -3,7 +3,6 @@ package utils
 import (
 	"log"
 	"main/models"
-	"strings"
 )
 
 func Error(e error) {
@@ -13,11 +12,14 @@ func Error(e error) {
 }
 
 func GetScore(model models.DataRes) models.ResultData {
+	pGood := (model.Classification.Teardown.Good * 100) / model.NumberOfSentences
+	pBad := (model.Classification.Teardown.Bad * 100) / model.NumberOfSentences
 	return models.ResultData{
-		PercentSus:       float64(model.Metrics.Preliminary.NumOfSusWords) / float64(len(strings.Split(model.Content, " "))) * 100,
-		GenderBias:       model.Metrics.Nlp.GenderBias.Verdict,
-		NumberOfSusWords: model.Metrics.Preliminary.NumOfSusWords,
-		TotalWords:       len(strings.Split(model.Content, " ")),
-		SentimentScore:   model.Metrics.Nlp.SentimentData.Comparative,
+		Negative:            model.Sentiment.Verdict,
+		GoodBadVerdict:      model.Classification.Verdict,
+		PercentGood:         pGood,
+		PercentBad:          pBad,
+		FlaggedKeywordTotal: model.StaticKeyword.Teardown.Total,
+		TotalNumOfSentances: model.NumberOfSentences,
 	}
 }
