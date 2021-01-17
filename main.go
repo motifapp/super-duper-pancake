@@ -52,7 +52,7 @@ func main() {
 		})
 	})
 
-	r.GET("/metrics", Metrics)
+	r.POST("/metrics", Metrics)
 	r.Run()
 }
 
