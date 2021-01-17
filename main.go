@@ -10,22 +10,15 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
 	ctx       = context.TODO()
-	C, e      = mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://motifapp:<password>@cluster0.unmcm.mongodb.net/motif?retryWrites=true&w=majority"))
-	Client    = C.Database("motif")
 	ScrapeUrl = "https://server.aidenbai.repl.co/api/v1/scrape?url="
 )
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
-	utils.Error(e)
-	e = C.Ping(ctx, nil)
-	utils.Error(e)
 }
 
 func GETMETRICS(url string) (models.DataRes, error) {
@@ -59,10 +52,12 @@ func main() {
 
 func Metrics(c *gin.Context) {
 	var input models.Input
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	m, err := GETMETRICS(input.Url)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
