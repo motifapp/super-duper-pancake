@@ -44,6 +44,7 @@ func main() {
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
+		AllowHeaders:    []string{"Content-Type"},
 	}))
 
 	r.GET("/ping", func(c *gin.Context) {
