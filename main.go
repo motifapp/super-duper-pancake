@@ -65,7 +65,7 @@ func Metrics(c *gin.Context) {
 		return
 	}
 
-	if strings.HasPrefix(input.Url, "https://thetahacks.tech/") {
+	if strings.HasPrefix(input.Url, "https://thetahacks.tech/") || strings.HasPrefix(input.Url, "https://motifapp.netlify.app/") {
 		c.JSON(200, models.ResultData{
 			Negative:            0,
 			GoodBadVerdict:      "good",
